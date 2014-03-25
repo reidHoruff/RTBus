@@ -4,9 +4,9 @@ An Android app to track capus busses in real time.
 ##Installation Instructions
 (Installation requires an Android Phone running at least **Android version 3.2**)
 
-* In Android Settings navigate to the 'Security' page and check the box by 'Unknown Source'.
+* In Android **Settings** navigate to the **Security** page and check the box by **Unknown Source**.
 
-* Visit this link on an Android device and follow the instructions on screen. (https://dl.dropboxusercontent.com/u/17919013/app.apk)
+* Visit [this link](https://dl.dropboxusercontent.com/u/17919013/app.apk) on an Android device and follow the instructions on screen.
 
 
 ##Style Guidelines
