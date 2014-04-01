@@ -1,0 +1,16 @@
+{% load sniper %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% sniper_onload %}
+  </head>
+  <body>
+    hello there.
+    <a href="#" data-sniper="/async/get_live/">click</a>
+    <div id="foo"></div>
+    <script src="{% static 'sniper/sniper.js' %}"></script>
+  </body>
+</html>
+
