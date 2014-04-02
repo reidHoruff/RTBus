@@ -6,3 +6,18 @@ This server will store routes and and provide real time bus tracking information
 
 ##Installation
 N/A
+
+
+##API Reference
+####Create Route
+* /create\_route?name=NameOfRoute
+
+```
+{
+    "load": {
+      "id": 4
+    }, 
+    "message": "Route Created", 
+    "success": true
+}
+```

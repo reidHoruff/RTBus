@@ -8,7 +8,8 @@ class BusWroute(models.Model):
 
   @staticmethod
   def create_wroute(name):
-    BusWroute.objects.create(name=name)
+    route = BusWroute.objects.create(name=name)
+    return route.id
 
   def add_coordinate(self, lat, lng):
     Coordinate.create_coordinate(lat, lng, self)

@@ -93,8 +93,9 @@ def create_route(request):
         'success': False,
         'message': 'Invalid Parameters.',
       }
-  BusWroute.create_wroute(name=name)
-  return {'success': True, 'message': 'Route Created'}
+  id = BusWroute.create_wroute(name=name)
+  return {'success': True, 'message': 'Route Created', 
+      'load': {'id': id}}
 
 @json_response
 def get_route_list(request):
