@@ -37,7 +37,7 @@ def set_cur_pos(request):
       }
 
   RealTimeRoutes.set_pos(id=id, lat=lat, lng=lng)
-  return {'success':True}
+  return {'success': True, 'message': 'Position Updated.'}
 
 @json_response
 def get_cur_pos(request):
