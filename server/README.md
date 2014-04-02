@@ -22,7 +22,8 @@ N/A
 }
 ```
 
-###get\_route/?id=RouteID
+###Get Route
+get\_route/?id=RouteID
 
 ```
 {
