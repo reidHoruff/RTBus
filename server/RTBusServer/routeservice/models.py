@@ -47,7 +47,7 @@ class BusStop(models.Model):
 
 
   @staticmethod
-  def create_stop(self, lat, lng, name, route):
+  def create_stop(lat, lng, name, route):
     BusStop.objects.create(
         name=name,
         lat=lat,
