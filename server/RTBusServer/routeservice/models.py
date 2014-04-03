@@ -14,6 +14,9 @@ class BusWroute(models.Model):
   def add_coordinate(self, lat, lng):
     Coordinate.create_coordinate(lat, lng, self)
 
+  def add_stop(self, lat, lng, name):
+    Stop.create_stop(lat, lng, name, self)
+
   @staticmethod
   def get_route(id):
     return BusWroute.objects.get(id=id)
@@ -41,6 +44,15 @@ class BusStop(models.Model):
   route = models.ForeignKey('BusWroute', related_name='stops')
   lat = models.DecimalField(max_digits=25, decimal_places=20)
   lng = models.DecimalField(max_digits=25, decimal_places=20)
+
+
+  @staticmethod
+  def create_stop(self, lat, lng, name, route):
+    BusStop.objects.create(
+        name=name,
+        lat=lat,
+        lng=lng,
+        route=route)
 
   def dump_info(self):
     return {

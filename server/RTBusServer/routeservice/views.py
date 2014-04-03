@@ -135,3 +135,31 @@ def add_coordinate(request):
     }
 
 
+@json_response
+def add_stop(request):
+  try:
+    lat = request.REQUEST['lat']
+    lng = request.REQUEST['lng']
+    name = request.REQUEST['name']
+    id = request.REQUEST['id']
+  except KeyError:
+    return {
+        'success': False,
+        'message': 'Invalid Parameters.',
+      }
+
+  route = BusWroute.get_route(id)
+  
+  if not route:
+    return {
+        'success': False, 
+        'message': 'Could not find route from specified id',
+    }
+
+
+  route.add_stop(lat, lng, name)
+
+  return {
+      'success': True,
+      'message': 'Stop Added',
+    }
