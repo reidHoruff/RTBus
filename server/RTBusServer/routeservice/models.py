@@ -15,7 +15,7 @@ class BusWroute(models.Model):
     Coordinate.create_coordinate(lat, lng, self)
 
   def add_stop(self, lat, lng, name):
-    Stop.create_stop(lat, lng, name, self)
+    BusStop.create_stop(lat, lng, name, self)
 
   @staticmethod
   def get_route(id):
