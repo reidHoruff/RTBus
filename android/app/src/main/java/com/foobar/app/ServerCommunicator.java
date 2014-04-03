@@ -24,17 +24,25 @@ import java.net.URI;
 /*
 HOW TO USE
 make your activity implement 'OnServerTaskComplete'
-then add a method onServerTaskComplete(String response) to that activity.
+You must then make your activity implement all of the methods in OnServerTaskComplete.java
 
-Create a ServerCommunicator object to your and call one of the
+(there is 6 of them I think)
+
+Create a ServerCommunicator object and call one of the
 listed methods below depending on what server operation you
 want to peform.
 
-Once the server request is completed the method 'onServerTaskComplete(String response)
-will be called and 'String response' will contain the server's response.
+Once the server request is completed the appropriate corresponding method (from OnServerTaskComplete.java)
+will be called.
 
 You will then have to parse that string 'it will be json'
 see: https://github.com/reidHoruff/RTBus/tree/master/server
+
+Give me some more time an you wont have to parse the string, the method will insted
+provide you with a object containing all of the relevent data.
+
+
+(Also I haven't tested all of these so there might be some typoes in the query strings)
  */
 
 public class ServerCommunicator {
@@ -48,20 +56,20 @@ public class ServerCommunicator {
     public void createRoute(OnServerTaskComplete activity, String name) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("create_route").appendQueryParameter("name", name);
-        new RequestTask(activity).execute(builder.build().toString());
+        new CreateRouteRequestTask(activity).execute(builder.build().toString());
     }
 
     public void getRoute(OnServerTaskComplete activity, int id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_route")
             .appendQueryParameter("id", Integer.toString(id));
-        new RequestTask(activity).execute(builder.build().toString());
+        new GetRouteRequestTask(activity).execute(builder.build().toString());
     }
 
     public void getRouteList(OnServerTaskComplete activity) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_route_list");
-        new RequestTask(activity).execute(builder.build().toString());
+        new GetRouteListRequestTask(activity).execute(builder.build().toString());
     }
 
     public void addCoordiante(OnServerTaskComplete activity, int id, double lat, double lng) {
@@ -70,7 +78,7 @@ public class ServerCommunicator {
             .appendQueryParameter("id", Integer.toString(id))
             .appendQueryParameter("lat", Double.toString(lat))
             .appendQueryParameter("lng", Double.toString(lng));
-        new RequestTask(activity).execute(builder.build().toString());
+        new AddCoordinateRequestTask(activity).execute(builder.build().toString());
     }
 
     public void setCurrentPosition(OnServerTaskComplete activity, int id, double lat, double lng) {
@@ -79,19 +87,19 @@ public class ServerCommunicator {
             .appendQueryParameter("id", Integer.toString(id))
             .appendQueryParameter("lat", Double.toString(lat))
             .appendQueryParameter("lng", Double.toString(lng));
-        new RequestTask(activity).execute(builder.build().toString());
+        new SetCurrentBusPositionRequestTask(activity).execute(builder.build().toString());
     }
 
     public void getCurrentPosition(OnServerTaskComplete activity, int id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_cur_position")
                 .appendQueryParameter("id", Integer.toString(id));
-        new RequestTask(activity).execute(builder.build().toString());
+        new GetCurrentBusPositionRequestTask(activity).execute(builder.build().toString());
     }
 }
 
 
-class RequestTask extends AsyncTask<String, String, String>{
+abstract class RequestTask extends AsyncTask<String, String, String>{
     OnServerTaskComplete activity;
 
     public RequestTask(OnServerTaskComplete activity) {
@@ -130,7 +138,75 @@ class RequestTask extends AsyncTask<String, String, String>{
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        this.activity.onServerTaskComplete(result);
+        this.notify(result);
+    }
+
+    protected void notify(String result) {
     }
 }
 
+class CreateRouteRequestTask extends RequestTask {
+    public CreateRouteRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+       this.activity.createRouteResponse(response);
+    }
+}
+
+class GetRouteRequestTask extends RequestTask {
+    public GetRouteRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+        this.activity.getRouteResponse(response);
+    }
+}
+
+class GetRouteListRequestTask extends RequestTask {
+    public GetRouteListRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+        this.activity.getRouteListResponse(response);
+    }
+}
+
+class AddCoordinateRequestTask extends RequestTask {
+    public AddCoordinateRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+        this.activity.addCoordinateResponse(response);
+    }
+}
+
+class SetCurrentBusPositionRequestTask extends RequestTask {
+    public SetCurrentBusPositionRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+        this.activity.setCurrentBusPositionResponse(response);
+    }
+}
+
+class GetCurrentBusPositionRequestTask extends RequestTask {
+    public GetCurrentBusPositionRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(String response) {
+        this.activity.getCurrentBusPositionResponse(response);
+    }
+}

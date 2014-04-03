@@ -9,10 +9,15 @@ import android.util.Log;
 
 public class MapActivity extends Activity implements OnServerTaskComplete {
 
-    public void onServerTaskComplete(String response) {
-        Log.v("REST", "we got a callback, boys!!");
+    public void createRouteResponse(String response){
         Log.v("REST", response);
     }
+
+    public void getRouteResponse(String response){}
+    public void getRouteListResponse(String response){}
+    public void addCoordinateResponse(String response){}
+    public void setCurrentBusPositionResponse(String response){}
+    public void getCurrentBusPositionResponse(String response){}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
