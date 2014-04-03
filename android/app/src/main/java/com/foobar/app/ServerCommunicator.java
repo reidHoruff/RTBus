@@ -19,6 +19,24 @@ import java.net.URI;
 /**
  * Created by reidhoruff on 4/2/14.
  */
+
+
+/*
+HOW TO USE
+make your activity implement 'OnServerTaskComplete'
+then add a method onServerTaskComplete(String response) to that activity.
+
+Create a ServerCommunicator object to your and call one of the
+listed methods below depending on what server operation you
+want to peform.
+
+Once the server request is completed the method 'onServerTaskComplete(String response)
+will be called and 'String response' will contain the server's response.
+
+You will then have to parse that string 'it will be json'
+see: https://github.com/reidHoruff/RTBus/tree/master/server
+ */
+
 public class ServerCommunicator {
     HttpClient httpclient = null;
     final String ADDRESS = "reidhoruff.webfactional.com";
