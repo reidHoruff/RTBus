@@ -99,7 +99,12 @@ def create_route(request):
 
 @json_response
 def get_route_list(request):
-  return BusWroute.get_route_list_info()
+  return {
+      'success': True,
+      'dump': {
+        'routes': BusWroute.get_route_list_info()
+        }
+      }
 
 @json_response
 def add_coordinate(request):
