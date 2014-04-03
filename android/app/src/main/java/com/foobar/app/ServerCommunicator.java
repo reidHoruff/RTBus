@@ -14,7 +14,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Created by reidhoruff on 4/2/14.
@@ -101,9 +107,11 @@ public class ServerCommunicator {
 
 abstract class RequestTask extends AsyncTask<String, String, String>{
     OnServerTaskComplete activity;
+    protected boolean isSuccess;
 
     public RequestTask(OnServerTaskComplete activity) {
         this.activity = activity;
+        this.isSuccess = false;
     }
 
     @Override
@@ -120,7 +128,7 @@ abstract class RequestTask extends AsyncTask<String, String, String>{
                 response.getEntity().writeTo(out);
                 out.close();
                 responseString = out.toString();
-                Log.i("REST", responseString);
+                //Log.i("REST", responseString);
             } else{
                 Log.i("REST", "error----");
                 response.getEntity().getContent().close();
@@ -138,11 +146,30 @@ abstract class RequestTask extends AsyncTask<String, String, String>{
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        this.notify(result);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonobj = null;
+
+        if (result != null) {
+            try {
+                jsonobj = (JSONObject)(parser.parse(result));
+            } catch (ParseException e) {
+            }
+        }
+
+
+        if (jsonobj != null) {
+            this.isSuccess = (Boolean)jsonobj.get("success");
+        }
+
+        this.notify(jsonobj);
     }
 
-    protected void notify(String result) {
+
+    protected boolean isSuccess() {
+        return this.isSuccess;
     }
+
+    abstract protected void notify(JSONObject json);
 }
 
 class CreateRouteRequestTask extends RequestTask {
@@ -151,8 +178,13 @@ class CreateRouteRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-       this.activity.createRouteResponse(response);
+    protected void notify(JSONObject json) {
+        if (!this.isSuccess()) {
+            this.activity.createRouteResponse(-1);
+        } else {
+            long id = (Long)((JSONObject)(json.get("load"))).get("id");
+            this.activity.createRouteResponse(id);
+        }
     }
 }
 
@@ -162,8 +194,37 @@ class GetRouteRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-        this.activity.getRouteResponse(response);
+    protected void notify(JSONObject json) {
+        if (!this.isSuccess()) {
+            this.activity.getRouteResponse(null);
+        } else {
+            JSONObject load = (JSONObject)json.get("load");
+            String name = (String) load.get("name");
+            Long id = (Long) load.get("id");
+            Route route = new Route(name, id);
+
+            JSONArray coordinates = (JSONArray) load.get("coordinates");
+            JSONArray stops = (JSONArray) load.get("stops");
+
+            Iterator<JSONObject> iterator = coordinates.iterator();
+            while (iterator.hasNext()) {
+                JSONObject coord = iterator.next();
+                double lat = Double.parseDouble((String)coord.get("lat"));
+                double lng = Double.parseDouble((String)coord.get("lng"));
+                route.addCoordinate(new Coordinate(lat, lng));
+            }
+
+           iterator = stops.iterator();
+            while (iterator.hasNext()) {
+                JSONObject stop = iterator.next();
+                double lat = Double.parseDouble((String)stop.get("lat"));
+                double lng = Double.parseDouble((String)stop.get("lng"));
+                String stopName = (String)stop.get("name");
+                route.addStop(new BusStop(stopName, lat, lng));
+            }
+
+            this.activity.getRouteResponse(route);
+        }
     }
 }
 
@@ -173,8 +234,21 @@ class GetRouteListRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-        this.activity.getRouteListResponse(response);
+    protected void notify(JSONObject json) {
+        if (!this.isSuccess()) {
+            this.activity.getRouteListResponse(null);
+        } else {
+            ArrayList<Route> routes = new ArrayList<Route>();
+            JSONArray arr = (JSONArray)((JSONObject)(json.get("dump"))).get("routes");
+            Iterator<JSONObject> iterator = arr.iterator();
+
+            while (iterator.hasNext()) {
+                JSONObject item = iterator.next();
+                routes.add(new Route((String)item.get("name"), (Long)item.get("id")));
+            }
+
+            this.activity.getRouteListResponse(routes);
+        }
     }
 }
 
@@ -184,8 +258,8 @@ class AddCoordinateRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-        this.activity.addCoordinateResponse(response);
+    protected void notify(JSONObject json) {
+        this.activity.addCoordinateResponse(this.isSuccess());
     }
 }
 
@@ -195,8 +269,8 @@ class SetCurrentBusPositionRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-        this.activity.setCurrentBusPositionResponse(response);
+    protected void notify(JSONObject json) {
+        this.activity.setCurrentBusPositionResponse(this.isSuccess());
     }
 }
 
@@ -206,7 +280,15 @@ class GetCurrentBusPositionRequestTask extends RequestTask {
     }
 
     @Override
-    protected void notify(String response) {
-        this.activity.getCurrentBusPositionResponse(response);
+    protected void notify(JSONObject json) {
+        if (!this.isSuccess()) {
+            this.activity.getCurrentBusPositionResponse(null);
+        } else {
+            JSONObject load = (JSONObject)json.get("load");
+            double lat = Double.parseDouble((String)load.get("lat"));
+            double lng = Double.parseDouble((String) load.get("lng"));
+            long diff = (Long)load.get("diff");
+            this.activity.getCurrentBusPositionResponse(new BusPosition(new Coordinate(lat, lng), diff));
+        }
     }
 }

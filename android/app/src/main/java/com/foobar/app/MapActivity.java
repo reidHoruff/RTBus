@@ -7,17 +7,42 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+
 public class MapActivity extends Activity implements OnServerTaskComplete {
 
-    public void createRouteResponse(String response){
-        Log.v("REST", response);
+    private GoogleMap map = null;
+    private Route route = null;
+
+    public void createRouteResponse(long id){
+        Log.v("REST", "here");
+        Log.v("REST", Long.toString(id));
     }
 
-    public void getRouteResponse(String response){}
-    public void getRouteListResponse(String response){}
-    public void addCoordinateResponse(String response){}
-    public void setCurrentBusPositionResponse(String response){}
-    public void getCurrentBusPositionResponse(String response){}
+    public void getRouteResponse(Route route) {
+        Log.v("REST", "getRoute");
+        Log.v("REST", route.toString());
+        this.route = route;
+        route.draw(this.map);
+    }
+
+    public void getRouteListResponse(ArrayList<Route> routes){
+        for (Route r : routes) {
+            Log.v("REST", r.toString());
+        }
+    }
+
+    public void getCurrentBusPositionResponse(BusPosition busPosition) {
+        if (this.route != null) {
+            this.route.setBusPosition(busPosition);
+        }
+    }
+
+    public void addCoordinateResponse(boolean response){}
+    public void setCurrentBusPositionResponse(boolean response){}
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,46 +50,13 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
         setContentView(R.layout.activity_map);
 
         ServerCommunicator comm = new ServerCommunicator();
-        comm.createRoute(this, "this is a route.");
+        //comm.createRoute(this, "this is a route.");
+        //comm.getRouteList(this);
+        Log.v("REST", "this is happending now");
+        comm.getRoute(this, 1);
 
-        GoogleMap map = ((MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map)).getMap();
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(33.585543, -101.865126), 15));
-
-        // Polylines are useful for marking paths and routes on the map.
-        map.addPolyline(new PolylineOptions().geodesic(true)
-            .add(new LatLng(33.585543, -101.865126))
-            .add(new LatLng(33.585449, -101.868361))
-            .add(new LatLng(33.588345, -101.868565))
-            .add(new LatLng(33.588193, -101.872331))
-            .add(new LatLng(33.586977, -101.872706))
-            .add(new LatLng(33.584305, -101.873200))
-            .add(new LatLng(33.584448, -101.870625))
-            .add(new LatLng(33.588228, -101.870560))
-            .add(new LatLng(33.588219, -101.864098))
-            .add(new LatLng(33.585458, -101.864120))
-            .add(new LatLng(33.585543, -101.865126))
-            .color(Color.BLUE)
-            .width(3)
-        );
-
-        map.addMarker(new MarkerOptions().position(new LatLng(33.585543, -101.865126)));
-        map.addMarker(new MarkerOptions().position(new LatLng(33.588219, -101.864098)));
-        map.addMarker(new MarkerOptions().position(new LatLng(33.586950, -101.872735)));
-
-        map.addPolyline(new PolylineOptions().geodesic(true)
-                .add(new LatLng(33.583500, -101.868352))
-                .add(new LatLng(33.581731, -101.868331))
-                .add(new LatLng(33.581731, -101.868331))
-                .add(new LatLng(33.583536, -101.864061))
-                .add(new LatLng(33.583500, -101.868352))
-                .color(Color.RED)
-                .width(3)
-        );
-
-        map.addMarker(new MarkerOptions().position(new LatLng(33.583536, -101.864061)));
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(33.585543, -101.865126), 15));
     }
 }
 
