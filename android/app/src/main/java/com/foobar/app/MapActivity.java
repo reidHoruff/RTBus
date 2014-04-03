@@ -5,13 +5,23 @@ import com.google.android.gms.maps.model.*;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
-public class MapActivity extends Activity {
+public class MapActivity extends Activity implements OnServerTaskComplete {
+
+    public void onServerTaskComplete(String response) {
+        Log.v("REST", "we got a callback, boys!!");
+        Log.v("REST", response);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        ServerCommunicator comm = new ServerCommunicator();
+        comm.createRoute(this, "this is a route.");
+
         GoogleMap map = ((MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map)).getMap();
 
