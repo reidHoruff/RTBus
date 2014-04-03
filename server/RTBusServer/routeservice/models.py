@@ -27,6 +27,7 @@ class BusWroute(models.Model):
   def dump_info(self):
     return {
         'name': self.name,
+        'id': self.id,
         'coordinates': [x.dump_info() for x in self.coordinates.all()],
         'stops': [x.dump_info() for x in self.stops.all()],
       }
