@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^create_route/$', 'routeservice.views.create_route', name='create_route'),
     url(r'^get_route_list/$', 'routeservice.views.get_route_list', name='get_route_list'),
     url(r'^add_coordinate/$', 'routeservice.views.add_coordinate', name='add_coordinate'),
+    url(r'^add_stop/$', 'routeservice.views.add_stop', name='add_stop'),
 
     url(r'^async/get_live/$', 'routeservice.async.get_live', name='async_get_live'),
     url(r'^admin/', include(admin.site.urls)),
