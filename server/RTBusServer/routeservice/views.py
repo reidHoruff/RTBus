@@ -11,7 +11,10 @@ class RealTimeRoutes:
 
   @staticmethod
   def get_pos(id):
-    info = RealTimeCoordinates.get(id).dump_info()
+    info = RealTimeCoordinates.get(id)
+    if not info:
+      return None
+    info = info.dump_info()
     info['diff'] = int(time.time()) - info['time'] 
     return info
 
