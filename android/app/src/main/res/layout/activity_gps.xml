@@ -5,6 +5,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <Button
+        android:id="@+id/Button01"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="Create Route" />
+    <Button
+        android:id="@+id/Button02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make Stop"/>
+    <TextView
+        android:id="@+id/TextView00"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="5dip"
+        android:text="Route ID: X"
+        android:textSize="20sp" >
+    </TextView>
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
@@ -103,4 +122,7 @@
         </TextView>
     </LinearLayout>
 
-</LinearLayout><!-- From: file:/C:/Users/Gavin/Downloads/MyApplication/app/src/main/res/layout/activity_main.xml -->
+
+</LinearLayout>
+
+    <!-- From: file:/C:/Users/Gavin/Downloads/MyApplication/app/src/main/res/layout/activity_main.xml -->
