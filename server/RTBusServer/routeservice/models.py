@@ -84,3 +84,6 @@ class Coordinate(models.Model):
   def __unicode__(self):
     return str(self.lat) + ',' + str(self.lng)
 
+
+class RealTime(models.Model)::vs
+
