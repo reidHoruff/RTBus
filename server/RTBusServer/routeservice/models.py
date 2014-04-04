@@ -84,6 +84,42 @@ class Coordinate(models.Model):
   def __unicode__(self):
     return str(self.lat) + ',' + str(self.lng)
 
+class RealTimeCoordinates(models.Model):
+  lat = models.DecimalField(max_digits=25, decimal_places=20)
+  lng = models.DecimalField(max_digits=25, decimal_places=20)
+  route = models.IntegerField()
+  time = models.IntegerField()
 
-class RealTime(models.Model)::vs
 
+  @staticmethod
+  def create(lat, lng, route, time):
+    RealTimeCoordinates.objects.create(lat=lat, lng=lng, route=route, time=time)
+
+  @staticmethod
+  def get(id):
+    try:
+      return RealTimeCoordinates.objects.get(route=id)
+    except:
+      return None
+
+  @staticmethod
+  def set(route, lat, lng, time):
+    foo = RealTimeCoordinates.get(route)
+
+    if foo:
+      foo.lat = lat
+      foo.lng = lng
+      foo.time = time
+      foo.save()
+    else:
+      RealTimeCoordinates.create(lat, lng, route, time)
+
+  def dump_info(self):
+    return {
+        'lat': str(self.lat),
+        'lng': str(self.lng),
+        'time': self.time,
+      }
+
+  def __unicode__(self):
+    return str(self.lat) + ',' + str(self.lng)

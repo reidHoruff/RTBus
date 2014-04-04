@@ -7,15 +7,14 @@ class RealTimeRoutes:
 
   @staticmethod
   def set_pos(id, lat, lng):
-    RealTimeRoutes.routes[str(id)] = {
-        'lat': lat,
-        'lng': lng,
-        'time': int(time.time())
-      }
+    RealTimeCoordinates.set(id, lat, lng, int(time.time()))
 
   @staticmethod
   def get_pos(id):
-    info = RealTimeRoutes.routes[str(id)]
+    info = RealTimeCoordinates.get(id)
+    if not info:
+      return None
+    info = info.dump_info()
     info['diff'] = int(time.time()) - info['time'] 
     return info
 
