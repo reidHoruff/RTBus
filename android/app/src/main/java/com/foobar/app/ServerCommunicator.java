@@ -53,54 +53,66 @@ provide you with a object containing all of the relevent data.
 
 public class ServerCommunicator {
     HttpClient httpclient = null;
+    private OnServerTaskComplete client;
     final String ADDRESS = "reidhoruff.webfactional.com";
 
-    public ServerCommunicator() {
+    public ServerCommunicator(OnServerTaskComplete client) {
+        this.client = client;
        this.httpclient = new DefaultHttpClient();
     }
 
-    public void createRoute(OnServerTaskComplete activity, String name) {
+    public void createRoute(String name) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("create_route").appendQueryParameter("name", name);
-        new CreateRouteRequestTask(activity).execute(builder.build().toString());
+        new CreateRouteRequestTask(this.client).execute(builder.build().toString());
     }
 
-    public void getRoute(OnServerTaskComplete activity, int id) {
+    public void getRoute(int id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_route")
             .appendQueryParameter("id", Integer.toString(id));
-        new GetRouteRequestTask(activity).execute(builder.build().toString());
+        new GetRouteRequestTask(this.client).execute(builder.build().toString());
     }
 
-    public void getRouteList(OnServerTaskComplete activity) {
+    public void getRouteList() {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_route_list");
-        new GetRouteListRequestTask(activity).execute(builder.build().toString());
+        new GetRouteListRequestTask(this.client).execute(builder.build().toString());
     }
 
-    public void addCoordiante(OnServerTaskComplete activity, int id, double lat, double lng) {
+    public void addCoordiante(int id, double lat, double lng) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("add_coordinate")
             .appendQueryParameter("id", Integer.toString(id))
             .appendQueryParameter("lat", Double.toString(lat))
             .appendQueryParameter("lng", Double.toString(lng));
-        new AddCoordinateRequestTask(activity).execute(builder.build().toString());
+        new AddCoordinateRequestTask(this.client).execute(builder.build().toString());
     }
 
-    public void setCurrentPosition(OnServerTaskComplete activity, int id, double lat, double lng) {
+    public void addStop(int id, double lat, double lng, String name) {
         Uri.Builder builder = new Uri.Builder();
-        builder.scheme("http").authority(ADDRESS).appendPath("set_cur_position")
+        builder.scheme("http").authority(ADDRESS).appendPath("add_stop")
+            .appendQueryParameter("id", Integer.toString(id))
+            .appendQueryParameter("lat", Double.toString(lat))
+            .appendQueryParameter("lng", Double.toString(lng))
+            .appendQueryParameter("name", name);
+        new AddStopRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void setCurrentPosition(int id, double lat, double lng) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("set_cur_pos")
             .appendQueryParameter("id", Integer.toString(id))
             .appendQueryParameter("lat", Double.toString(lat))
             .appendQueryParameter("lng", Double.toString(lng));
-        new SetCurrentBusPositionRequestTask(activity).execute(builder.build().toString());
+        new SetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
 
-    public void getCurrentPosition(OnServerTaskComplete activity, int id) {
+    public void getCurrentPosition(int id) {
         Uri.Builder builder = new Uri.Builder();
-        builder.scheme("http").authority(ADDRESS).appendPath("get_cur_position")
+        builder.scheme("http").authority(ADDRESS).appendPath("get_cur_pos")
                 .appendQueryParameter("id", Integer.toString(id));
-        new GetCurrentBusPositionRequestTask(activity).execute(builder.build().toString());
+        new GetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
 }
 
@@ -119,6 +131,7 @@ abstract class RequestTask extends AsyncTask<String, String, String>{
         HttpClient httpclient = new DefaultHttpClient();
         HttpResponse response;
         String responseString = null;
+        Log.v("REST", uri[0]);
 
         try {
             response = httpclient.execute(new HttpGet(uri[0]));
@@ -198,6 +211,12 @@ class GetRouteRequestTask extends RequestTask {
         if (!this.isSuccess()) {
             this.activity.getRouteResponse(null);
         } else {
+            double max_lat = 0.0;
+            double min_lat = 0.0;
+            double max_lng = 0.0;
+            double min_lng = 0.0;
+            int num_coords = 0;
+
             JSONObject load = (JSONObject)json.get("load");
             String name = (String) load.get("name");
             Long id = (Long) load.get("id");
@@ -211,10 +230,20 @@ class GetRouteRequestTask extends RequestTask {
                 JSONObject coord = iterator.next();
                 double lat = Double.parseDouble((String)coord.get("lat"));
                 double lng = Double.parseDouble((String)coord.get("lng"));
+                if (num_coords == 0) {
+                    max_lat = min_lat = lat;
+                    max_lng = min_lng = lng;
+                } else {
+                    max_lat = Math.max(max_lat, lat);
+                    min_lat = Math.min(min_lat, lat);
+                    max_lng = Math.max(max_lng, lng);
+                    min_lng = Math.min(min_lng, lng);
+                }
+                num_coords++;
                 route.addCoordinate(new Coordinate(lat, lng));
             }
 
-           iterator = stops.iterator();
+            iterator = stops.iterator();
             while (iterator.hasNext()) {
                 JSONObject stop = iterator.next();
                 double lat = Double.parseDouble((String)stop.get("lat"));
@@ -260,6 +289,17 @@ class AddCoordinateRequestTask extends RequestTask {
     @Override
     protected void notify(JSONObject json) {
         this.activity.addCoordinateResponse(this.isSuccess());
+    }
+}
+
+class AddStopRequestTask extends RequestTask {
+    public AddStopRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        this.activity.addStopResponse(this.isSuccess());
     }
 }
 

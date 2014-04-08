@@ -1,5 +1,6 @@
 package com.foobar.app;
 
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +11,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
@@ -24,6 +27,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     private TextView latArrayField;
     private TextView longArrayField;
     private LocationManager locationManager;
+    private EditText routeNameInput;
 
     private StringBuilder builder1 = new StringBuilder();
     private StringBuilder builder2 = new StringBuilder();
@@ -32,7 +36,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     double currentLat;
     double currentLong;
     long id = 0;
-    private ServerCommunicator comm = new ServerCommunicator();
+    private ServerCommunicator comm = new ServerCommunicator(this);
 
     public void createRouteResponse(long route_id){
         id = route_id;
@@ -41,13 +45,13 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
 
     public void addCoordinateResponse(boolean success) {
         if (!success) {
-            routeCords = 0;
+            this.routeCords = 0;
         }
     }
 
     public void setCurrentBusPositionResponse(boolean success){
         if (!success) {
-            trackCords = 0;
+            this.trackCords = 0;
         }
     }
 
@@ -56,56 +60,54 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
 
-        routeIdField = (TextView) findViewById(R.id.TextView00);
-        latituteField = (TextView) findViewById(R.id.TextView02);
-        longitudeField = (TextView) findViewById(R.id.TextView04);
-        latArrayField = (TextView) findViewById(R.id.TextView06);
-        longArrayField = (TextView) findViewById(R.id.TextView07);
+        //keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final Button button1 = (Button) findViewById(R.id.Button01);
-        button1.setOnClickListener(new View.OnClickListener() {
+        //hide icon
+        getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
+        this.routeIdField = (TextView) findViewById(R.id.TextView00);
+        this.latituteField = (TextView) findViewById(R.id.TextView02);
+        this.longitudeField = (TextView) findViewById(R.id.TextView04);
+        this.latArrayField = (TextView) findViewById(R.id.TextView06);
+        this.longArrayField = (TextView) findViewById(R.id.TextView07);
+        this.routeNameInput = (EditText) findViewById(R.id.editText);
+
+        final Button recordButton = (Button) findViewById(R.id.Button01);
+
+        recordButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (routeCords == 0) {
                     routeCords = 1;
-                    button1.setText("Stop Sending");
+                    recordButton.setText("Stop Sending");
                     makeRoute();
                 } else {
                     routeCords = 0;
-                    button1.setText("Create Route");
+                    recordButton.setText("Create Route");
                 }
             }
         });
 
-        final Button button2 = (Button) findViewById(R.id.Button02);
-        button2.setOnClickListener(new View.OnClickListener() {
+        final Button markStopButton = (Button) findViewById(R.id.Button02);
+        markStopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                button2.setText("Create Stop");
+                markStopButton.setText("Create Stop");
                 makeStop();
             }
         });
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Criteria criteria = new Criteria();
-
-        if (location != null) {
-            System.out.println("Provider " + LocationManager.GPS_PROVIDER + " has been selected.");
-            onLocationChanged(location);
-        } else {
-            latituteField.setText("Location not available");
-            longitudeField.setText("Location not available");
-        }
     }
 
     public void makeRoute() {
-        comm.createRoute(this, "Default Route");
+        comm.createRoute("Default Route");
         builder1.delete(0,builder1.length());
         builder2.delete(0,builder2.length());
     }
 
     public void makeStop() {
         Log.v("REST", "makeStop");
-        comm.addStop(this, (int)id, currentLat, currentLong, "Default Stop");
+        comm.addStop((int)id, currentLat, currentLong, this.routeNameInput.getText().toString());
     }
 
     @Override
@@ -130,7 +132,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
         String lng = Double.toString (currentLong);
 
         if (routeCords == 1) {
-            comm.addCoordiante(this,(int)(long) id,location.getLatitude(),location.getLongitude());
+            comm.addCoordiante((int)(long) id, location.getLatitude(), location.getLongitude());
             builder1.append(String.valueOf(lat) + "\n");
             builder2.append(String.valueOf(lng) + "\n");
             latituteField.setText(String.valueOf(lat));

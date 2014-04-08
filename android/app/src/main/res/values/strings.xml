@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">FooBar</string>
+    <string name="app_name">RTBus</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_map">MapActivity</string>
-    <string name="title_activity_gps">GPSActivity</string>
-    <string name="title_activity_realtime_tracking">RealtimeTracking</string>
+    <string name="title_activity_gps">Record New Route</string>
+    <string name="title_activity_realtime_tracking">Track a Bus</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

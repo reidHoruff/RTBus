@@ -1,6 +1,7 @@
 package com.foobar.app;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.content.Context;
 import android.location.Criteria;
@@ -8,6 +9,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.WindowManager;
+
 import java.util.ArrayList;
 
 public class LocationUpdateActivity extends Activity implements LocationListener, OnServerTaskComplete {
@@ -16,7 +19,7 @@ public class LocationUpdateActivity extends Activity implements LocationListener
     long id = 0;
     LocationManager locationManager;
 
-    ServerCommunicator comm = new ServerCommunicator();
+    ServerCommunicator comm;
 
     public void createRouteResponse(long route_id){ }
     public void getRouteResponse(Route route){ }
@@ -31,6 +34,14 @@ public class LocationUpdateActivity extends Activity implements LocationListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_realtime_tracking);
+
+        //keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //hide icon
+        getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
+        this.comm = new ServerCommunicator(this);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -59,7 +70,7 @@ public class LocationUpdateActivity extends Activity implements LocationListener
     public void onLocationChanged(Location location) {
         currentLat = location.getLatitude();
         currentLong = location.getLongitude();
-        this.comm.setCurrentPosition(this, 50, currentLat, currentLong);
+        this.comm.setCurrentPosition(50, currentLat, currentLong);
         Log.v("REST", Double.toString(currentLat) + ": " + Double.toString(currentLong));
     }
 

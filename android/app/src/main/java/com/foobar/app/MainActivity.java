@@ -2,6 +2,7 @@ package com.foobar.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,13 +18,18 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //hide icon
+        getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.list);
 
         // Defined Array values to show in ListView
         String[] values = new String[] {
-                "Map View",
-                "Location View"
+                "Track a Bus",
+                "Record a Route",
+                "Tracking Mode",
+                "Settings"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -42,7 +48,10 @@ public class MainActivity extends Activity {
                     Intent myIntent = new Intent(MainActivity.this, MapActivity.class);
                     MainActivity.this.startActivity(myIntent);
                 } else if (position == 1) {
-                    Intent myIntent = new Intent(MainActivity.this, GPSActivity.class);
+                    Intent myIntent = new Intent(MainActivity.this, RecordRouteActivity.class);
+                    MainActivity.this.startActivity(myIntent);
+                } else if (position == 2) {
+                    Intent myIntent = new Intent(MainActivity.this, LocationUpdateActivity.class);
                     MainActivity.this.startActivity(myIntent);
                 }
             }

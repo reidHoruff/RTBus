@@ -14,4 +14,5 @@ public interface OnServerTaskComplete {
     public void addCoordinateResponse(boolean success);
     public void setCurrentBusPositionResponse(boolean success);
     public void getCurrentBusPositionResponse(BusPosition position);
+    public void addStopResponse(boolean success);
 }

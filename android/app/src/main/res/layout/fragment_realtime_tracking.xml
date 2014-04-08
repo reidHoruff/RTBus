@@ -13,6 +13,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Tracking is Happening"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="26dp" />
 
 </RelativeLayout>
