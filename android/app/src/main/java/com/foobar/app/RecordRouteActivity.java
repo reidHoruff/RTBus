@@ -21,16 +21,10 @@ import android.view.View;
 import java.util.ArrayList;
 
 public class RecordRouteActivity extends Activity implements LocationListener, OnServerTaskComplete {
-    private TextView routeIdField;
-    private TextView latituteField;
-    private TextView longitudeField;
-    private TextView latArrayField;
-    private TextView longArrayField;
     private LocationManager locationManager;
     private EditText routeNameInput;
-
-    private StringBuilder builder1 = new StringBuilder();
-    private StringBuilder builder2 = new StringBuilder();
+    private EditText stopNameInput;
+    private TextView GPSStatusText;
     int routeCords = 0;
     int trackCords = 0;
     double currentLat;
@@ -40,7 +34,6 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
 
     public void createRouteResponse(long route_id){
         id = route_id;
-        routeIdField.setText("Route ID: " + id);
     }
 
     public void addCoordinateResponse(boolean success) {
@@ -66,12 +59,9 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
         //hide icon
         getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
-        this.routeIdField = (TextView) findViewById(R.id.TextView00);
-        this.latituteField = (TextView) findViewById(R.id.TextView02);
-        this.longitudeField = (TextView) findViewById(R.id.TextView04);
-        this.latArrayField = (TextView) findViewById(R.id.TextView06);
-        this.longArrayField = (TextView) findViewById(R.id.TextView07);
-        this.routeNameInput = (EditText) findViewById(R.id.editText);
+        this.routeNameInput = (EditText) findViewById(R.id.routeNameInput);
+        this.stopNameInput = (EditText) findViewById(R.id.stopNameInput);
+        this.GPSStatusText = (TextView) findViewById(R.id.GPSStatusText);
 
         final Button recordButton = (Button) findViewById(R.id.Button01);
 
@@ -91,7 +81,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
         final Button markStopButton = (Button) findViewById(R.id.Button02);
         markStopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                markStopButton.setText("Create Stop");
+                markStopButton.setText("Mark Stop");
                 makeStop();
             }
         });
@@ -100,46 +90,35 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     }
 
     public void makeRoute() {
-        comm.createRoute("Default Route");
-        builder1.delete(0,builder1.length());
-        builder2.delete(0,builder2.length());
+        comm.createRoute(this.routeNameInput.getText().toString());
     }
 
     public void makeStop() {
         Log.v("REST", "makeStop");
-        comm.addStop((int)id, currentLat, currentLong, this.routeNameInput.getText().toString());
+        comm.addStop((int)id, currentLat, currentLong, stopNameInput.getText().toString());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, this);
-        latituteField.setText("Location not available");
-        longitudeField.setText("Location not available");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        locationManager.removeUpdates(this);
+        //locationManager.removeUpdates(this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         currentLat = location.getLatitude();
         currentLong = location.getLongitude();
-        String lat = Double.toString(currentLat);
-        String lng = Double.toString (currentLong);
 
         if (routeCords == 1) {
-            comm.addCoordiante((int)(long) id, location.getLatitude(), location.getLongitude());
-            builder1.append(String.valueOf(lat) + "\n");
-            builder2.append(String.valueOf(lng) + "\n");
-            latituteField.setText(String.valueOf(lat));
-            longitudeField.setText(String.valueOf(lng));
-            latArrayField.setText(builder1.toString());
-            longArrayField.setText(builder2.toString());
-        }
+            comm.addCoordiante((int) id, location.getLatitude(), location.getLongitude());
+        } 
+        this.GPSStatusText.setText(new Coordinate(currentLat, currentLong).toString());
     }
 
     @Override

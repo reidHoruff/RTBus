@@ -3,7 +3,6 @@ package com.foobar.app;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,6 +18,7 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     private GoogleMap map = null;
     private Route route = null;
     public ServerCommunicator communicator = null;
+    private BusRunnable busRunable;
     private Handler mHandler = null;
     private Runnable busUpdater = null;
     private ListView routeListView;
@@ -36,8 +36,10 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
 
         if (route != null) {
             Log.v("REST", route.toString());
+            this.map.clear();
             route.drawRouteAndStops(this.map);
             route.centerMap(this.map);
+            this.busRunable.setRouteId((int)route.getID());
         }
     }
 
@@ -84,11 +86,12 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
         communicator = new ServerCommunicator(this);
         communicator.getRouteList();
 
-        this.routeListView.setOnItemClickListener(new RouteListClickListener(this.communicator, this.routeList));
+        this.routeListView.setOnItemClickListener(new MapViewRouteListClickListener(this.communicator, this.routeList));
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(33.585543, -101.865126), 15));
-        new BusRunnable(this.communicator, 57).run();
+        this.busRunable = new BusRunnable(this.communicator);
+        this.busRunable.run();
     }
 
     @Override
@@ -100,11 +103,11 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     }
 }
 
-class RouteListClickListener implements AdapterView.OnItemClickListener {
+class MapViewRouteListClickListener implements AdapterView.OnItemClickListener {
     private ServerCommunicator communicator;
     private ArrayList<Route> routeList;
 
-    public RouteListClickListener(ServerCommunicator comm, ArrayList<Route> routeList) {
+    public MapViewRouteListClickListener(ServerCommunicator comm, ArrayList<Route> routeList) {
         this.communicator = comm;
         this.routeList = routeList;
     }
@@ -112,7 +115,7 @@ class RouteListClickListener implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Route route = this.routeList.get(position);
-        this.communicator.getRoute((int)route.id);
+        this.communicator.getRoute((int)route.getID());
     }
 }
 
@@ -121,15 +124,21 @@ class BusRunnable implements Runnable {
     private ServerCommunicator communicator;
     private int route_id;
 
-    public BusRunnable(ServerCommunicator communicator, int route_id) {
+    public BusRunnable(ServerCommunicator communicator) {
         this.mHandler = new Handler();
         this.communicator = communicator;
+        this.route_id = -1;
+    }
+
+    public void setRouteId(int route_id) {
         this.route_id = route_id;
     }
 
     public void run() {
         Log.v("REST", "updating bus");
-        this.communicator.getCurrentPosition(this.route_id);
-        mHandler.postDelayed(this, 3000);
+        if (this.route_id >= 0) {
+            this.communicator.getCurrentPosition(this.route_id);
+        }
+        mHandler.postDelayed(this, 2000);
     }
 }

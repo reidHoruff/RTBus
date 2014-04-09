@@ -14,5 +14,6 @@
         android:gravity="center"
         android:textColor="#e8f2ff"
         android:textSize="68dp"
+        android:fontFamily="sans-serif-thin"
         android:typeface="normal" />
 </LinearLayout>

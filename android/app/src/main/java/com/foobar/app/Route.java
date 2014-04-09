@@ -19,8 +19,8 @@ import java.util.ArrayList;
  * Created by reidhoruff on 4/3/14.
  */
 public class Route {
-    public String name;
-    public long id;
+    private String name;
+    private long id;
     public boolean isActive;
     public BusPosition position;
     public PolylineOptions polyline;
@@ -53,6 +53,10 @@ public class Route {
         return this.center;
     }
 
+    public long getID() {
+        return this.id;
+    }
+
     public void centerMap(GoogleMap map) {
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(this.latLngBoundsBuilder.build(), 20));
     }
@@ -81,11 +85,9 @@ public class Route {
         if (this.position == null || this.position.diff >= 30) {
           this.isActive = false;
           this.polylineUpdate.setColor(Color.GRAY);
-            Log.v("REST", "setting color red");
         } else {
             this.isActive = true;
-            this.polylineUpdate.setColor(Color.BLUE);
-            Log.v("REST", "setting color blue");
+            this.polylineUpdate.setColor(Color.argb(0xFF, 0x1E, 0x90, 0xFF));
         }
     }
 
@@ -106,18 +108,21 @@ public class Route {
         return this.polyline;
     }
 
-
     public void drawRouteAndStops(GoogleMap map) {
         this.polylineUpdate = map.addPolyline(this.toPolyline());
 
         for (BusStop stop: this.stops) {
-            //map.addMarker(stop.toMarker());
+            map.addMarker(stop.toMarker());
         }
 
         this.markerUpdate = map.addMarker(this.marker);
     }
 
     public String toString() {
-        return this.name + " (" + this.id + ")";
+        return this.name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

@@ -19,6 +19,6 @@ public class Coordinate {
     }
 
     public String toString() {
-        return Double.toString(this.lat) + ", " + Double.toString(this.lng);
+        return "(" + Double.toString(this.lat) + ", " + Double.toString(this.lng) + ")";
     }
 }
