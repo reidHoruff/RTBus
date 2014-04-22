@@ -36,6 +36,9 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     public void setCurrentBusPositionResponse(boolean success){ }
     public void createRouteResponse(long route_id){ }
     public void getRouteResponse(Route route){ }
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
 
 
     public void getRouteListResponse(ArrayList<Route> routes) {

@@ -55,6 +55,20 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     }
 
     public void addCoordinateResponse(boolean response){}
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
+        /*
+        if (subs == null) {
+            Log.v("REST", "NULL");
+        } else {
+            for (StopSubscription s: subs) {
+                Log.v("REST", s.toString());
+            }
+        }
+        */
+    }
 
     public void getRouteListResponse(ArrayList<Route> routes) {
         this.routeList.clear();
