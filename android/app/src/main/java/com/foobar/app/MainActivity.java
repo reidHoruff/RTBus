@@ -53,6 +53,9 @@ public class MainActivity extends Activity {
                 } else if (position == 2) {
                     Intent myIntent = new Intent(MainActivity.this, LocationUpdateActivity.class);
                     MainActivity.this.startActivity(myIntent);
+                } else if (position == 3) {
+                    Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                    MainActivity.this.startActivity(myIntent);
                 }
             }
 
