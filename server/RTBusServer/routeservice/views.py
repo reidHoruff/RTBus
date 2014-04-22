@@ -169,3 +169,72 @@ def add_stop(request):
       'success': True,
       'message': 'Stop Added',
     }
+
+
+@json_response
+def add_stop_sub(request):
+  try:
+    stop_id = request.REQUEST['stop_id']
+    device = request.REQUEST['device']
+    h = request.REQUEST['h']
+    m = request.REQUEST['m']
+  except KeyError:
+    return {
+        'success': False,
+        'message': 'Invalid Parameters.',
+      }
+
+  StopSubscription.objects.create(
+      device=device,
+      stop=BusStop.objects.get(id=stop_id),
+      h=h,
+      m=m
+    )
+
+  return {
+      'success': True,
+      'message': 'Stop Subscription Added',
+    }
+
+@json_response
+def get_stop_subs(request):
+  try:
+    device = request.REQUEST['device']
+  except KeyError:
+    return {
+        'success': False,
+        'message': 'Invalid Parameters.',
+      }
+
+  return {
+      'success': True,
+      'dump': StopSubscription.get_subs(device)
+    }
+
+@json_response
+def remove_stop_sub(request):
+  try:
+    id = request.REQUEST['id']
+    device = request.REQUEST['device']
+  except KeyError:
+    return {
+        'success': False,
+        'message': 'Invalid Parameters.',
+      }
+
+  StopSubscription.objects.get(id=id, device=device).delete()
+
+  return {
+      'success': True,
+      'message': 'Stop sub removed.',
+      'dump': StopSubscription.get_subs(device)
+    }
+
+@json_response
+def get_all_routes(request):
+  all_routes = BusWroute.objects.all()
+
+  return {
+      'success': True,
+      'dump': [r.dump_info() for r in all_routes]
+    }

@@ -60,10 +60,11 @@ class BusStop(models.Model):
         'name': self.name,
         'lat': str(self.lat),
         'lng': str(self.lng),
+        'route_name': str(self.route.name)
       }
 
   def __unicode__(self):
-    return self.name
+    return self.name + " " + str(self.id)
 
 
 class Coordinate(models.Model):
@@ -130,3 +131,26 @@ class RealTimeCoordinates(models.Model):
 
   def __unicode__(self):
     return str(self.lat) + ',' + str(self.lng)
+
+
+
+class StopSubscription(models.Model):
+  device = models.CharField(max_length=200)
+  stop = models.ForeignKey('BusStop', related_name='subscribers')
+  h = models.IntegerField()
+  m = models.IntegerField()
+
+  def dump_info(self):
+    return {
+        'device': self.device,
+        'stop': self.stop.dump_info(),
+        'h': self.h,
+        'm': self.m,
+        'id': self.id,
+      }
+
+  @staticmethod
+  def get_subs(device):
+    subs = StopSubscription.objects.filter(device=device)
+    return [s.dump_info() for s in subs]
+
