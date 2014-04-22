@@ -1,4 +1,5 @@
 from django.db import models
+import random
 
 
 class BusWroute(models.Model):
@@ -80,6 +81,12 @@ class Coordinate(models.Model):
         'lat': str(self.lat),
         'lng': str(self.lng),
       }
+
+  @staticmethod
+  def get_random(route_id):
+    results = list(Coordinate.objects.filter(route__id=route_id))
+    random.shuffle(results)
+    return results[0]
 
   def __unicode__(self):
     return str(self.lat) + ',' + str(self.lng)
