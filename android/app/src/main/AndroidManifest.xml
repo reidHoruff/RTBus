@@ -44,6 +44,10 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
+            android:name="com.foobar.app.SettingsActivity"
+            android:label="Settings">
+        </activity>
+        <activity
             android:name="com.foobar.app.SplashActivity"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar"
             android:label="@string/title_activity_splash" >

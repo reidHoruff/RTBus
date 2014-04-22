@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Route to subscribe:"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/hourInput"
+            android:layout_weight="0.20"
+            android:hint="Hour" />
+
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/minuteInput"
+            android:layout_weight="0.25"
+            android:hint="Minute" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+    <Button
+        android:id="@+id/buttonSubscribe"
+        android:layout_width="131dp"
+        android:layout_height="wrap_content"
+        android:text="Subscribe"
+        android:layout_weight="0.04"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
+
+
+    <!-- From: file:/C:/Users/Gavin/Downloads/MyApplication/app/src/main/res/layout/activity_main.xml -->
