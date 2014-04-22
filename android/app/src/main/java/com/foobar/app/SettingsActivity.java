@@ -12,6 +12,9 @@ import android.widget.Spinner;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import android.content.Context;
 
 public class SettingsActivity extends Activity implements OnServerTaskComplete {
     private Spinner spinner1;
@@ -22,7 +25,9 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     private ArrayList<Route> routeList;
     private ArrayAdapter<Route> routeListAdapter;
     private ServerCommunicator comm;
-    private int hour, minute = 0;           // Where the hour and minute are saved
+    private int hour, minute, routeID = 0;           // Where the hour and minute are saved
+    private String FILENAME = "settings_file";
+    private String fileData;
 
 
     public void getCurrentBusPositionResponse(BusPosition position){ }
@@ -62,9 +67,17 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                 hour = Integer.parseInt(hourInput.getText().toString());                // Sets hour to currently typed in hour
                 minute = Integer.parseInt(minuteInput.getText().toString());              // Sets minute to currently typed in minute
                 route = routeList.get(routeList.indexOf(spinner1.getSelectedItem()));   // Sets the route to current selected route
+                FileOutputStream outputStream;
+                String string = route.toString() + " " + hour + " " + minute;
+                try {
+                    outputStream = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                    outputStream.write(string.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
-        });
+         });
     }
 
     public void addItemsOnSpinner() {
