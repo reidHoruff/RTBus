@@ -114,6 +114,23 @@ public class ServerCommunicator {
                 .appendQueryParameter("id", Integer.toString(id));
         new GetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
+
+    public void addStopSub(int id, String device, int h, int m)    {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("add_stop_sub")
+                .appendQueryParameter("id", Integer.toString(id))
+                .appendQueryParameter("device", device)
+                .appendQueryParameter("h", Integer.toString(h))
+                .appendQueryParameter("m", Integer.toString(m));
+//        new AddStopSubRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void getStopSubs(String device)    {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("get_stop_subs")
+                .appendQueryParameter("device", device);
+        new GetStopSubsRequestTask(this.client).execute(builder.build().toString());
+    }
 }
 
 
@@ -300,6 +317,38 @@ class AddStopRequestTask extends RequestTask {
     @Override
     protected void notify(JSONObject json) {
         this.activity.addStopResponse(this.isSuccess());
+    }
+}
+/*
+class AddStopSubRequestTask extends RequestTask {
+    public AddStopSubRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        this.activity.addStopSubResponse(this.isSuccess());
+    }
+}
+*/
+
+class GetStopSubsRequestTask extends RequestTask {
+    public GetStopSubsRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        if (!this.isSuccess()) {
+            this.activity.getRouteResponse(null);
+        } else {
+            JSONObject load = (JSONObject)json.get("load");
+            String device = (String) load.get("device");
+            Long id = (Long) load.get("id");
+            int h = Integer.parseInt((String)load.get("h"));
+            int m = Integer.parseInt((String)load.get("m"));
+            this.activity.getStopSubsResponse(device,h,m,id);
+        }
     }
 }
 

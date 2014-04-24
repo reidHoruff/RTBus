@@ -25,6 +25,8 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     private ArrayList<Route> routeList;
     private ArrayAdapter<Route> routeListAdapter;
 
+    public void getStopSubsResponse(String device, int h, int m, long id) { }
+
     public void createRouteResponse(long id){
         Log.v("REST", "here");
         Log.v("REST", Long.toString(id));

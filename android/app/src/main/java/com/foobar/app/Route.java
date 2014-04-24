@@ -2,6 +2,7 @@ package com.foobar.app;
 
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,8 +31,8 @@ public class Route {
     private Coordinate center = null;
     private LatLngBounds.Builder latLngBoundsBuilder;
 
-    ArrayList<Coordinate> coordinates;
-    ArrayList<BusStop> stops;
+    private ArrayList<Coordinate> coordinates;
+    private ArrayList<BusStop> stops;
 
     public Route(String name, long id) {
         this.isActive = false;
@@ -72,6 +73,11 @@ public class Route {
 
     public void addStop(BusStop stop) {
         this.stops.add(stop);
+    }
+
+    public ArrayList<BusStop> getStops() {
+        Log.v("REST", "returning stops from: " + this.toString() + " " + this.stops.size() + " " + this.stops.toString());
+        return this.stops;
     }
 
     public void setBusPosition(BusPosition pos) {

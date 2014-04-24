@@ -32,6 +32,8 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     long id = 0;
     private ServerCommunicator comm = new ServerCommunicator(this);
 
+    public void getStopSubsResponse(String device, int h, int m, long id) { }
+
     public void createRouteResponse(long route_id){
         id = route_id;
     }
