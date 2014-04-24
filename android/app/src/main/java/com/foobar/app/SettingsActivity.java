@@ -33,6 +33,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     private ArrayList<BusStop> stopList;
     private ArrayAdapter<Route> routeListAdapter;
     private ArrayAdapter<BusStop> stopListAdapter;
+    private ArrayList<StopSubscription> stopSubs;
     private ServerCommunicator comm;
 
     private int hour, minute, apm = 0, routeID = 0;           // Where the hour and minute are saved and apm = am or pm
@@ -41,11 +42,15 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
 
     private String android_id = Secure.ANDROID_ID;
 
-    public void getStopSubsResponse(String device, int h, int m, long id) {     // gets the stop subs
-        this.hour2 = h;
-        this.minute2 = m;
-        this.routeID2 = (int) id;
-        this.device = device;
+    public void deleteStopSubscriptionResponse(boolean success) { }
+    public void addStopSubscriptionResponse(boolean success) { }
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
+        this.stopSubs = subs;
+        Toast.makeText(SettingsActivity.this,
+                "Get Subs : " +
+                        subs.toString(),
+                Toast.LENGTH_LONG).show();
+        Log.v("REST","from server: " + subs.toString());
     }
 
     public void getCurrentBusPositionResponse(BusPosition position){ }
@@ -54,7 +59,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     public void setCurrentBusPositionResponse(boolean success){ }
     public void createRouteResponse(long route_id){ }
 
-    public void getRouteResponse(Route route){      // Populates stoplist to populate StopMenu
+    public void getRouteResponse(Route route){      // Populates sto plist to populate StopMenu
         this.route = route;
         this.stopList.clear();
         for (BusStop stop : route.getStops())
@@ -117,8 +122,13 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                 else
                     minute = Integer.parseInt(minuteInput.getText().toString());              // Sets minute to currently typed in minute
                 Route route = routeList.get(routeList.indexOf(RouteMenu.getSelectedItem()));   // Sets the route to current selected route
-                comm.addStopSub((int) route.getID(),"1" ,hour, minute);
-
+                comm.getStopSubscriptions();
+                if (stopSubs != null)   {
+                    for (StopSubscription sub : stopSubs)
+                        comm.deleteStopSubscription(sub.getID());
+                }
+                comm.getStopSubscriptions();
+                comm.addStopSub(116,hour,minute);
                 Toast.makeText(SettingsActivity.this,
                         "On Subscribe : " +
                                 "\nRoute : "+ String.valueOf(RouteMenu.getSelectedItem()) +
@@ -126,8 +136,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                                 "\nSubscribed to: RouteID: " + route.getID() + " Hour: " + hour +
                                 " Minute: " + minute  + "\n Android ID: " + android_id,
                         Toast.LENGTH_LONG).show();
-                        Log.v("REST","from phone: " + android_id + " " + routeID + " " + hour + " " + minute);
-
+                comm.getStopSubscriptions();
                 /*
                 // For on device file saving
                 hour = Integer.parseInt(hourInput.getText().toString());                // Sets hour to currently typed in hour

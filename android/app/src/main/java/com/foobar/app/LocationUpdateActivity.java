@@ -30,8 +30,6 @@ public class LocationUpdateActivity extends Activity implements LocationListener
     private LocationManager locationManager;
     private ServerCommunicator comm;
 
-    public void getStopSubsResponse(String device, int h, int m, long id) { }
-
     public void createRouteResponse(long route_id){ }
     public void getRouteResponse(Route route){ }
 
@@ -56,6 +54,9 @@ public class LocationUpdateActivity extends Activity implements LocationListener
     public void setCurrentBusPositionResponse(boolean success){ }
     public void getCurrentBusPositionResponse(BusPosition position){ }
     public void addStopResponse(boolean success) { }
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
 
     //    private String provider;
     @Override

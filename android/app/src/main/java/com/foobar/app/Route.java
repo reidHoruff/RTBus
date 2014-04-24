@@ -2,7 +2,6 @@ package com.foobar.app;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,8 +12,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.nio.charset.CoderMalfunctionError;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by reidhoruff on 4/3/14.
@@ -31,19 +34,45 @@ public class Route {
     private Coordinate center = null;
     private LatLngBounds.Builder latLngBoundsBuilder;
 
-    private ArrayList<Coordinate> coordinates;
-    private ArrayList<BusStop> stops;
+    ArrayList<Coordinate> coordinates;
+    ArrayList<BusStop> stops;
 
-    public Route(String name, long id) {
+    public Route() {
         this.isActive = false;
-        this.name = name;
-        this.id = id;
         this.coordinates = new ArrayList<Coordinate>();
         this.stops = new ArrayList<BusStop>();
         this.polyline = new PolylineOptions();
         this.marker = new MarkerOptions();
         this.marker.position(new LatLng(100.0, 100.0));
         this.latLngBoundsBuilder = new LatLngBounds.Builder();
+    }
+
+    public Route(String name, long id) {
+        this();
+        this.name = name;
+        this.id = id;
+    }
+
+    public Route(JSONObject load) {
+        this();
+
+        this.name = (String) load.get("name");
+        this.id = (Long) load.get("id");
+
+        JSONArray coordinates = (JSONArray) load.get("coordinates");
+        JSONArray stops = (JSONArray) load.get("stops");
+
+        Iterator<JSONObject> iterator = coordinates.iterator();
+        while (iterator.hasNext()) {
+            JSONObject coord = iterator.next();
+            this.addCoordinate(new Coordinate(coord));
+        }
+
+        iterator = stops.iterator();
+        while (iterator.hasNext()) {
+            JSONObject stop = iterator.next();
+            this.addStop(new BusStop(stop));
+        }
     }
 
     public void setCenter(Coordinate center) {
@@ -61,7 +90,9 @@ public class Route {
     public void centerMap(GoogleMap map) {
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(this.latLngBoundsBuilder.build(), 20));
     }
-
+    public ArrayList<BusStop> getStops()  {
+        return this.stops;
+    }
     public void addCoordinate(Coordinate coordinate) {
         this.coordinates.add(coordinate);
         this.latLngBoundsBuilder.include(coordinate.toLatLng());
@@ -73,11 +104,6 @@ public class Route {
 
     public void addStop(BusStop stop) {
         this.stops.add(stop);
-    }
-
-    public ArrayList<BusStop> getStops() {
-        Log.v("REST", "returning stops from: " + this.toString() + " " + this.stops.size() + " " + this.stops.toString());
-        return this.stops;
     }
 
     public void setBusPosition(BusPosition pos) {

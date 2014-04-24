@@ -25,8 +25,6 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     private ArrayList<Route> routeList;
     private ArrayAdapter<Route> routeListAdapter;
 
-    public void getStopSubsResponse(String device, int h, int m, long id) { }
-
     public void createRouteResponse(long id){
         Log.v("REST", "here");
         Log.v("REST", Long.toString(id));
@@ -57,6 +55,20 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
     }
 
     public void addCoordinateResponse(boolean response){}
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
+        /*
+        if (subs == null) {
+            Log.v("REST", "NULL");
+        } else {
+            for (StopSubscription s: subs) {
+                Log.v("REST", s.toString());
+            }
+        }
+        */
+    }
 
     public void getRouteListResponse(ArrayList<Route> routes) {
         this.routeList.clear();
