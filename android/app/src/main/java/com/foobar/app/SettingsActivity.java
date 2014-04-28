@@ -42,8 +42,6 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
 
     private String android_id = Secure.ANDROID_ID;
 
-    public void deleteStopSubscriptionResponse(boolean success) { }
-    public void addStopSubscriptionResponse(boolean success) { }
     public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
         this.stopSubs = subs;
         Toast.makeText(SettingsActivity.this,
@@ -58,11 +56,8 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     public void addCoordinateResponse(boolean success) {    }
     public void setCurrentBusPositionResponse(boolean success){ }
     public void createRouteResponse(long route_id){ }
-
-    public void getRouteResponse(Route route){ }
     public void deleteStopSubscriptionResponse(boolean success) {}
     public void addStopSubscriptionResponse(boolean success) {}
-    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
 
     public void getRouteResponse(Route route){      // Populates sto plist to populate StopMenu
         this.route = route;
@@ -142,20 +137,6 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                                 " Minute: " + minute  + "\n Android ID: " + android_id,
                         Toast.LENGTH_LONG).show();
                 comm.getStopSubscriptions();
-                /*
-                // For on device file saving
-                hour = Integer.parseInt(hourInput.getText().toString());                // Sets hour to currently typed in hour
-                minute = Integer.parseInt(minuteInput.getText().toString());              // Sets minute to currently typed in minute
-                route = routeList.get(routeList.indexOf(spinner1.getSelectedItem()));   // Sets the route to current selected route
-                FileOutputStream outputStream;
-                String string = route.toString() + " " + hour + " " + minute;
-                try {
-                    outputStream = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-                    outputStream.write(string.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             }
          });
     }
