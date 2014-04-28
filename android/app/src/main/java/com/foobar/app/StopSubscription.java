@@ -25,6 +25,14 @@ public class StopSubscription {
         this.ID = (Long) dump.get("id");
     }
 
+    public long getID() {
+        return this.ID;
+    }
+
+    public long getStopID() {
+        return this.stopID;
+    }
+
     public String toString() {
         return Long.toString(this.stopID) + ":" + this.stopName;
     }

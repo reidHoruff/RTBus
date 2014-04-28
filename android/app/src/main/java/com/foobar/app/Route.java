@@ -90,7 +90,9 @@ public class Route {
     public void centerMap(GoogleMap map) {
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(this.latLngBoundsBuilder.build(), 20));
     }
-
+    public ArrayList<BusStop> getStops()  {
+        return this.stops;
+    }
     public void addCoordinate(Coordinate coordinate) {
         this.coordinates.add(coordinate);
         this.latLngBoundsBuilder.include(coordinate.toLatLng());

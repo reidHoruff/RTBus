@@ -123,7 +123,8 @@ public class ServerCommunicator {
     public void deleteStopSubscription(long id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("remove_stop_sub")
-                .appendQueryParameter("id", Long.toString(id));
+                .appendQueryParameter("id", Long.toString(id))
+                .appendQueryParameter("device", this.devID);
         new DeleteStopSubscriptionRequestTask(this.client).execute(builder.build().toString());
     }
 
