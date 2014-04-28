@@ -15,4 +15,7 @@ public interface OnServerTaskComplete {
     public void setCurrentBusPositionResponse(boolean success);
     public void getCurrentBusPositionResponse(BusPosition position);
     public void addStopResponse(boolean success);
+    public void deleteStopSubscriptionResponse(boolean success);
+    public void addStopSubscriptionResponse(boolean success);
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs);
 }

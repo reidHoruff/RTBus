@@ -134,4 +134,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     public void getRouteListResponse(ArrayList<Route> routes){ }
     public void getCurrentBusPositionResponse(BusPosition position){ }
     public void addStopResponse(boolean success) { }
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
 }
