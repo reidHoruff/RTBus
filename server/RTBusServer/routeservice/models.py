@@ -60,7 +60,9 @@ class BusStop(models.Model):
         'name': self.name,
         'lat': str(self.lat),
         'lng': str(self.lng),
-        'route_name': str(self.route.name)
+        'route_name': str(self.route.name),
+        'route_id': int(self.route.id),
+        'id': self.id,
       }
 
   def __unicode__(self):
@@ -143,10 +145,11 @@ class StopSubscription(models.Model):
   def dump_info(self):
     return {
         'device': self.device,
-        'stop': self.stop.dump_info(),
         'h': self.h,
         'm': self.m,
         'id': self.id,
+        'stop_name': self.stop.name,
+        'stop_id': self.stop.id,
       }
 
   @staticmethod

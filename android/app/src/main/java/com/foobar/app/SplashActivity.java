@@ -12,7 +12,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
-        int secondsDelayed = 4;
+        int secondsDelayed = 2;
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
