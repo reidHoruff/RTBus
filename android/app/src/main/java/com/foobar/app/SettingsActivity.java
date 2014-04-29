@@ -42,8 +42,11 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
 
     private String android_id = Secure.ANDROID_ID;
 
+<<<<<<< HEAD
     public void deleteStopSubscriptionResponse(boolean success) { }
     public void addStopSubscriptionResponse(boolean success) { }
+=======
+>>>>>>> upstream/master
     public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
         this.stopSubs = subs;
         Toast.makeText(SettingsActivity.this,
@@ -58,6 +61,11 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     public void addCoordinateResponse(boolean success) {    }
     public void setCurrentBusPositionResponse(boolean success){ }
     public void createRouteResponse(long route_id){ }
+<<<<<<< HEAD
+=======
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+>>>>>>> upstream/master
 
     public void getRouteResponse(Route route){      // Populates sto plist to populate StopMenu
         this.route = route;
@@ -137,6 +145,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                                 " Minute: " + minute  + "\n Android ID: " + android_id,
                         Toast.LENGTH_LONG).show();
                 comm.getStopSubscriptions();
+<<<<<<< HEAD
                 /*
                 // For on device file saving
                 hour = Integer.parseInt(hourInput.getText().toString());                // Sets hour to currently typed in hour
@@ -151,11 +160,14 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
+=======
+>>>>>>> upstream/master
             }
          });
     }
 
     public void addStops(Route route){
+<<<<<<< HEAD
         this.comm = new ServerCommunicator(this);
         Log.v("REST", "Getting route: " + route.getID());
         comm.getRoute((int) route.getID());
@@ -163,6 +175,15 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
 
     public void addItemsOnRouteMenu() {
         this.comm = new ServerCommunicator(this);
+=======
+        this.comm = new ServerCommunicator(this);
+        Log.v("REST", "Getting route: " + route.getID());
+        comm.getRoute((int) route.getID());
+    }
+
+    public void addItemsOnRouteMenu() {
+        this.comm = new ServerCommunicator(this);
+>>>>>>> upstream/master
         RouteMenu = (Spinner) findViewById(R.id.spinner1);
         this.routeList = new ArrayList<Route>();
         this.routeListAdapter = new ArrayAdapter<Route>(this,android.R.layout.simple_spinner_item, this.routeList);
@@ -183,6 +204,30 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
             this.comm.getRoute((int) route.getID());
         }
     }
+<<<<<<< HEAD
+=======
+}
+
+class CustomOnItemSelectedListener implements OnItemSelectedListener {
+    private ArrayList<Route> routeList;
+    private SettingsActivity client;
+
+    public CustomOnItemSelectedListener (ArrayList<Route> Routelist, SettingsActivity Client) {
+        this.client = Client;
+        routeList = Routelist;
+    }
+    public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+        Route route = this.routeList.get(routeList.indexOf(parent.getItemAtPosition(pos)));
+        Log.v("REST", route.toString() + " " + pos);
+        client.addStops(route);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+        // TODO Auto-generated method stub
+    }
+
+>>>>>>> upstream/master
 }
 
 class CustomOnItemSelectedListener implements OnItemSelectedListener {

@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 public class BusStop {
     public Coordinate coordinate;
     public String name;
+    public long ID;
 
     public BusStop(String name, double lat, double lng) {
         this(name, new Coordinate(lat, lng));
@@ -26,6 +27,14 @@ public class BusStop {
         String stopName = (String)stop.get("name");
         this.name = stopName;
         this.coordinate = new Coordinate(lat, lng);
+<<<<<<< HEAD
+=======
+        this.ID = (Long) stop.get("id");
+    }
+
+    public long getID() {
+        return this.ID;
+>>>>>>> upstream/master
     }
 
     public MarkerOptions toMarker() {
@@ -33,6 +42,6 @@ public class BusStop {
     }
 
     public String toString() {
-        return this.name + ": " + this.coordinate.toString();
+        return this.name;
     }
 }

@@ -28,9 +28,17 @@ public class StopSubscription {
     public long getID() {
         return this.ID;
     }
+<<<<<<< HEAD
     public long getStopID() {
         return this.stopID;
     }
+=======
+
+    public long getStopID() {
+        return this.stopID;
+    }
+
+>>>>>>> upstream/master
     public String toString() {
         return Long.toString(this.stopID) + ":" + this.stopName;
     }
