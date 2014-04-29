@@ -27,14 +27,11 @@ public class BusStop {
         String stopName = (String)stop.get("name");
         this.name = stopName;
         this.coordinate = new Coordinate(lat, lng);
-<<<<<<< HEAD
-=======
         this.ID = (Long) stop.get("id");
     }
 
     public long getID() {
         return this.ID;
->>>>>>> upstream/master
     }
 
     public MarkerOptions toMarker() {

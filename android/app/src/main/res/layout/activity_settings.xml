@@ -6,51 +6,45 @@
     android:weightSum="1"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter hour to ride[1-12][1-60][AM/PM]:"/>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:weightSum="1">
 
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:id="@+id/hourInput"
-            android:layout_weight="0.20"
-            android:hint="Hour" />
-
-        <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:id="@+id/minuteInput"
-            android:layout_weight="0.25"
-            android:hint="Minute" />
-        <Button
-            android:id="@+id/buttonAPM"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AM" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Enter Time:"
+            android:id="@+id/textView" />
     </LinearLayout>
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timepicker" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Route to subscribe to:"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Choose your route:"
+        android:id="@+id/textView2" />
+
     <Spinner
         android:id="@+id/spinner1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop to subscribe to:"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Choose your Stop:"
+        android:id="@+id/textView3" />
+
     <Spinner
         android:id="@+id/spinner2"
         android:layout_width="match_parent"
@@ -61,6 +55,18 @@
         android:layout_width="131dp"
         android:layout_height="wrap_content"
         android:text="Subscribe"
+        android:layout_weight="0.04"
+        android:layout_gravity="center_horizontal" />
+    <Spinner
+        android:id="@+id/spinner3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="131dp"
+        android:layout_height="wrap_content"
+        android:text="Delete"
         android:layout_weight="0.04"
         android:layout_gravity="center_horizontal" />
 
