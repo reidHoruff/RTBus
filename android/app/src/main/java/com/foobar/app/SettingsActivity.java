@@ -51,6 +51,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     public void addStopSubscriptionResponse(boolean success) { }
     public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {
         this.stopSubs = subs;
+        this.subList.clear();
         Log.v("REST","Subs from server: " + subs.toString());
         for (StopSubscription sub : subs)   {
             this.subList.add(sub);
