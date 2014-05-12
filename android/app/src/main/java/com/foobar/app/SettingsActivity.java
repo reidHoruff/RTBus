@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -29,9 +30,6 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     private Spinner SubMenu;
     private Button buttonSubscribe;
     private Button buttonDelete;
-    private Button buttonAPM;
-    private EditText hourInput;
-    private EditText minuteInput;
     private TimePicker timePicker;
 
     private Route route;                // Where route is saved
@@ -44,8 +42,6 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
     private ArrayAdapter<StopSubscription> subListAdapter;
     private ArrayList<StopSubscription> stopSubs;
     private ServerCommunicator comm;
-
-    private int hour, minute, routeID = 0;           // Where the hour and minute are saved and apm = am or pm
 
     public void deleteStopSubscriptionResponse(boolean success) { }
     public void addStopSubscriptionResponse(boolean success) { }
@@ -169,6 +165,7 @@ public class SettingsActivity extends Activity implements OnServerTaskComplete {
         SubMenu.setAdapter(subListAdapter);
         this.comm.getStopSubscriptions();
     }
+
 
 }
 
