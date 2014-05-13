@@ -1,5 +1,8 @@
 package com.foobar.app;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,11 +19,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import android.provider.Settings.Secure;
 
 /**
  * Created by reidhoruff on 4/2/14.
@@ -55,10 +61,14 @@ public class ServerCommunicator {
     HttpClient httpclient = null;
     private OnServerTaskComplete client;
     final String ADDRESS = "reidhoruff.webfactional.com";
+    private String devID = null;
 
-    public ServerCommunicator(OnServerTaskComplete client) {
-        this.client = client;
-       this.httpclient = new DefaultHttpClient();
+    public ServerCommunicator(Activity activity) {
+        this.client = (OnServerTaskComplete) activity;
+        this.httpclient = new DefaultHttpClient();
+        Context c = activity.getApplicationContext();
+        this.devID = this.getDevID(c);
+        Log.v("GCMfoo", "ServerComm DevID: " + this.devID);
     }
 
     public void createRoute(String name) {
@@ -111,11 +121,63 @@ public class ServerCommunicator {
     public void getCurrentPosition(int id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_cur_pos")
-                .appendQueryParameter("id", Integer.toString(id));
+                .appendQueryParameter("id", Integer.toString(id))
+                //only random if String == "true"
+                .appendQueryParameter("r", "true");
         new GetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
-}
 
+    public void deleteStopSubscription(long id) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("remove_stop_sub")
+                .appendQueryParameter("id", Long.toString(id))
+                .appendQueryParameter("device", this.devID);
+        new DeleteStopSubscriptionRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void addStopSub(long stopID, int h, int m) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("add_stop_sub")
+                .appendQueryParameter("device", this.devID)
+                .appendQueryParameter("stop_id", Long.toString(stopID))
+                .appendQueryParameter("m", Long.toString(m))
+                .appendQueryParameter("h", Long.toString(h));
+        new AddStopSubscriptionRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void getStopSubscriptions() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("get_stop_subs")
+                .appendQueryParameter("device", this.devID);
+        new GetStopSubscriptionRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void subscribeGCM(String regID) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("sub_gcm")
+                .appendQueryParameter("dev_id", this.devID)
+                .appendQueryParameter("reg_id", regID);
+        new SubscribeGCMRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    private String getDevID(Context context) {
+        String uniqueID = null;
+        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
+        if (uniqueID == null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(
+                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+            if (uniqueID == null) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.commit();
+            }
+        }
+        return uniqueID;
+    }
+}
 
 abstract class RequestTask extends AsyncTask<String, String, String>{
     OnServerTaskComplete activity;
@@ -141,7 +203,7 @@ abstract class RequestTask extends AsyncTask<String, String, String>{
                 response.getEntity().writeTo(out);
                 out.close();
                 responseString = out.toString();
-                //Log.i("REST", responseString);
+                Log.i("REST", responseString);
             } else{
                 Log.i("REST", "error----");
                 response.getEntity().getContent().close();
@@ -169,11 +231,9 @@ abstract class RequestTask extends AsyncTask<String, String, String>{
             }
         }
 
-
         if (jsonobj != null) {
             this.isSuccess = (Boolean)jsonobj.get("success");
         }
-
         this.notify(jsonobj);
     }
 
@@ -211,48 +271,8 @@ class GetRouteRequestTask extends RequestTask {
         if (!this.isSuccess()) {
             this.activity.getRouteResponse(null);
         } else {
-            double max_lat = 0.0;
-            double min_lat = 0.0;
-            double max_lng = 0.0;
-            double min_lng = 0.0;
-            int num_coords = 0;
-
             JSONObject load = (JSONObject)json.get("load");
-            String name = (String) load.get("name");
-            Long id = (Long) load.get("id");
-            Route route = new Route(name, id);
-
-            JSONArray coordinates = (JSONArray) load.get("coordinates");
-            JSONArray stops = (JSONArray) load.get("stops");
-
-            Iterator<JSONObject> iterator = coordinates.iterator();
-            while (iterator.hasNext()) {
-                JSONObject coord = iterator.next();
-                double lat = Double.parseDouble((String)coord.get("lat"));
-                double lng = Double.parseDouble((String)coord.get("lng"));
-                if (num_coords == 0) {
-                    max_lat = min_lat = lat;
-                    max_lng = min_lng = lng;
-                } else {
-                    max_lat = Math.max(max_lat, lat);
-                    min_lat = Math.min(min_lat, lat);
-                    max_lng = Math.max(max_lng, lng);
-                    min_lng = Math.min(min_lng, lng);
-                }
-                num_coords++;
-                route.addCoordinate(new Coordinate(lat, lng));
-            }
-
-            iterator = stops.iterator();
-            while (iterator.hasNext()) {
-                JSONObject stop = iterator.next();
-                double lat = Double.parseDouble((String)stop.get("lat"));
-                double lng = Double.parseDouble((String)stop.get("lng"));
-                String stopName = (String)stop.get("name");
-                route.addStop(new BusStop(stopName, lat, lng));
-            }
-
-            this.activity.getRouteResponse(route);
+            this.activity.getRouteResponse(new Route(load));
         }
     }
 }
@@ -330,5 +350,59 @@ class GetCurrentBusPositionRequestTask extends RequestTask {
             long diff = (Long)load.get("diff");
             this.activity.getCurrentBusPositionResponse(new BusPosition(new Coordinate(lat, lng), diff));
         }
+    }
+}
+
+class DeleteStopSubscriptionRequestTask extends RequestTask {
+    public DeleteStopSubscriptionRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        this.activity.deleteStopSubscriptionResponse(this.isSuccess());
+    }
+}
+
+class AddStopSubscriptionRequestTask extends RequestTask {
+    public AddStopSubscriptionRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        this.activity.addStopSubscriptionResponse(this.isSuccess());
+    }
+}
+
+class GetStopSubscriptionRequestTask extends RequestTask {
+    public GetStopSubscriptionRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        if (this.isSuccess()) {
+            JSONArray arr = (JSONArray) json.get("dump");
+            ArrayList<StopSubscription> stopSubs = new ArrayList<StopSubscription>();
+            Iterator<JSONObject> it = arr.iterator();
+            while (it.hasNext()) {
+                stopSubs.add(new StopSubscription(it.next()));
+            }
+            this.activity.getStopSubscriptionsResponse(stopSubs);
+        } else {
+            this.activity.getStopSubscriptionsResponse(null);
+        }
+    }
+}
+
+class SubscribeGCMRequestTask extends RequestTask {
+    public SubscribeGCMRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        Log.v("GCMfoo", "Register Success: " + this.isSuccess());
     }
 }
