@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     url(r'^get_stop_subs/$', 'routeservice.views.get_stop_subs', name='get_stop_subs'),
     url(r'^remove_stop_sub/$', 'routeservice.views.remove_stop_sub', name='remove_stop_sub'),
     url(r'^get_all_routes/$', 'routeservice.views.get_all_routes', name='get_all_routes'),
+    url(r'^sub_gcm/$', 'routeservice.views.sub_gcm', name='sub_gcm'),
 
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'', include('gcm.urls')),
 )

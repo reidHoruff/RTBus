@@ -1,8 +1,11 @@
 from easy.decorators import *
 from routeservice.models import *
+from gcm.models import get_device_model
 import time
 
+
 class RealTimeRoutes:
+  index = 0
   routes = dict()
 
   @staticmethod
@@ -10,18 +13,24 @@ class RealTimeRoutes:
     RealTimeCoordinates.set(id, lat, lng, int(time.time()))
 
   @staticmethod
-  def get_pos(id):
+  def get_pos(id, r=False):
+    if r:
+      coords = list(Coordinate.objects.filter(route__id=id))
+      RealTimeRoutes.index += 4
+      RealTimeRoutes.index %= len(coords)
+      info = coords[RealTimeRoutes.index].dump_info()
+      info['diff'] = 1
+      info['index'] = RealTimeRoutes.index
+      info['len'] = len(coords)
+      return info
+
     info = RealTimeCoordinates.get(id)
-    #info = Coordinate.get_random(id)
 
     if not info:
       return None
 
-    #info = info.dump_info()
-    #info['diff'] = 1
-    #return info
-
     info = info.dump_info()
+
     info['diff'] = int(time.time()) - info['time'] 
     return info
 
@@ -49,13 +58,18 @@ def set_cur_pos(request):
 def get_cur_pos(request):
   try:
     id=request.REQUEST['id']
+    r=request.REQUEST['r']
+    if r == 'true':
+      r = True
+    else:
+      r = False
   except KeyError:
     return {
         'success': False,
         'message': 'Invalid Parameters.',
       }
 
-  pos = RealTimeRoutes.get_pos(id=id)
+  pos = RealTimeRoutes.get_pos(id=id, r=r)
   print 'pos', pos
 
   if not pos:
@@ -238,3 +252,36 @@ def get_all_routes(request):
       'success': True,
       'dump': [r.dump_info() for r in all_routes]
     }
+
+@json_response
+def sub_gcm(request):
+  try:
+    reg_id = request.REQUEST['reg_id']
+    dev_id = request.REQUEST['dev_id']
+  except KeyError:
+    return {
+        'success': False,
+        'message': 'Invalid Parameters.',
+      }
+
+
+  print "creating device sub"
+  try:
+    get_device_model().objects.create(
+        name=dev_id,
+        dev_id=dev_id,
+        reg_id=reg_id
+        )
+  except: 
+    return {
+        'success': False,
+        'message': 'Registration Failed',
+      }
+
+  return {
+      'success': True,
+      'message': 'Device registered',
+      'reg_id': reg_id,
+      'dev_id': dev_id,
+    }
+
