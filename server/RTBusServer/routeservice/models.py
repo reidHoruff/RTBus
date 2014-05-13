@@ -1,4 +1,5 @@
 from django.db import models
+from gcm.models import get_device_model
 import random
 
 
@@ -156,4 +157,3 @@ class StopSubscription(models.Model):
   def get_subs(device):
     subs = StopSubscription.objects.filter(device=device)
     return [s.dump_info() for s in subs]
-

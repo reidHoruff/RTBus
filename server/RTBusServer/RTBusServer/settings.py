@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'routeservice',
+    'gcm',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -153,3 +154,5 @@ LOGGING = {
         },
     }
 }
+
+GCM_APIKEY = 'AIzaSyCYDHReVqf-HqFtXisumy4HadRje7ySnXQ' 
