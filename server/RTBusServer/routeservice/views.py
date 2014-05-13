@@ -7,6 +7,7 @@ import time
 class RealTimeRoutes:
   index = 0
   routes = dict()
+  ind = dict()
 
   @staticmethod
   def set_pos(id, lat, lng):
@@ -16,12 +17,17 @@ class RealTimeRoutes:
   def get_pos(id, r=False):
     if r:
       coords = list(Coordinate.objects.filter(route__id=id))
-      RealTimeRoutes.index += 4
-      RealTimeRoutes.index %= len(coords)
-      info = coords[RealTimeRoutes.index].dump_info()
+      if not coords:
+        return None
+      if id not in RealTimeRoutes.ind:
+        RealTimeRoutes.ind[id] = 0
+      RealTimeRoutes.ind[id] += 3
+      RealTimeRoutes.ind[id] %= len(coords)
+      info = coords[RealTimeRoutes.ind[id]].dump_info()
       info['diff'] = 1
-      info['index'] = RealTimeRoutes.index
+      info['index'] = RealTimeRoutes.ind[id]
       info['len'] = len(coords)
+      RealTimeRoutes.set_pos(id=id, lat=float(info['lat']), lng=float(info['lng']))
       return info
 
     info = RealTimeCoordinates.get(id)
