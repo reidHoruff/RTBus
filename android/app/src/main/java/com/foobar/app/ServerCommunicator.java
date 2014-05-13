@@ -1,6 +1,8 @@
 package com.foobar.app;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -60,10 +63,12 @@ public class ServerCommunicator {
     final String ADDRESS = "reidhoruff.webfactional.com";
     private String devID = null;
 
-    public ServerCommunicator(Activity client) {
-        this.client = (OnServerTaskComplete) client;
+    public ServerCommunicator(Activity activity) {
+        this.client = (OnServerTaskComplete) activity;
         this.httpclient = new DefaultHttpClient();
-        this.devID = "sfsdfs";
+        Context c = activity.getApplicationContext();
+        this.devID = this.getDevID(c);
+        Log.v("GCMfoo", "ServerComm DevID: " + this.devID);
     }
 
     public void createRoute(String name) {
@@ -116,7 +121,9 @@ public class ServerCommunicator {
     public void getCurrentPosition(int id) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(ADDRESS).appendPath("get_cur_pos")
-                .appendQueryParameter("id", Integer.toString(id));
+                .appendQueryParameter("id", Integer.toString(id))
+                //only random if String == "true"
+                .appendQueryParameter("r", "true");
         new GetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
 
@@ -143,6 +150,32 @@ public class ServerCommunicator {
         builder.scheme("http").authority(ADDRESS).appendPath("get_stop_subs")
                 .appendQueryParameter("device", this.devID);
         new GetStopSubscriptionRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    public void subscribeGCM(String regID) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http").authority(ADDRESS).appendPath("sub_gcm")
+                .appendQueryParameter("dev_id", this.devID)
+                .appendQueryParameter("reg_id", regID);
+        new SubscribeGCMRequestTask(this.client).execute(builder.build().toString());
+    }
+
+    private String getDevID(Context context) {
+        String uniqueID = null;
+        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
+        if (uniqueID == null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(
+                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+            if (uniqueID == null) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.commit();
+            }
+        }
+        return uniqueID;
     }
 }
 
@@ -360,5 +393,16 @@ class GetStopSubscriptionRequestTask extends RequestTask {
         } else {
             this.activity.getStopSubscriptionsResponse(null);
         }
+    }
+}
+
+class SubscribeGCMRequestTask extends RequestTask {
+    public SubscribeGCMRequestTask(OnServerTaskComplete activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void notify(JSONObject json) {
+        Log.v("GCMfoo", "Register Success: " + this.isSuccess());
     }
 }

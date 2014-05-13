@@ -69,11 +69,11 @@ public class GcmIntentService extends IntentService {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.abc_ab_bottom_solid_dark_holo)
-                        .setContentTitle("Your Bus is Arriving")
+                        .setSmallIcon(R.drawable.icon1)
+                        .setContentTitle("Your Bus is Almost Here")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(msg))
-                        .setContentText("It's almost just around the corner!");
+                        .bigText("It's just around the corner!"))
+                        .setContentText("It's just around the corner!");
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

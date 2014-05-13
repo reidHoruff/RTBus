@@ -18,4 +18,17 @@ public interface OnServerTaskComplete {
     public void deleteStopSubscriptionResponse(boolean success);
     public void addStopSubscriptionResponse(boolean success);
     public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs);
+
+    /*
+    public void createRouteResponse(long route_id) {}
+    public void getRouteResponse(Route route) {}
+    public void getRouteListResponse(ArrayList<Route> routes) {}
+    public void addCoordinateResponse(boolean success) {}
+    public void setCurrentBusPositionResponse(boolean success) {}
+    public void getCurrentBusPositionResponse(BusPosition position) {}
+    public void addStopResponse(boolean success) {}
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
+    */
 }

@@ -20,9 +20,11 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnServerTaskComplete {
 
     ListView listView;
 
@@ -30,6 +32,7 @@ public class MainActivity extends Activity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
 
     /**
      * 'Software Engineering' project number in Google API Console.
@@ -50,7 +53,7 @@ public class MainActivity extends Activity {
         //hide icon
         getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
-        context = getApplicationContext();
+        context = this.getApplicationContext();
 
         // Get ListView object from xml
         listView = (ListView) findViewById(R.id.list);
@@ -97,7 +100,8 @@ public class MainActivity extends Activity {
             Log.v("GCMfoo", "This device is supported. [ok]");
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
-            if (regid.isEmpty()) {
+            boolean always = true;
+            if (regid.isEmpty() || always) {
                 this.registerInBackground();
             }
         } else {
@@ -193,7 +197,21 @@ public class MainActivity extends Activity {
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
+        Log.v("GCMfoo", "Registering device to our server...");
+        new ServerCommunicator(this).subscribeGCM(regId);
     }
+
+    //not used
+    public void createRouteResponse(long route_id) {}
+    public void getRouteResponse(Route route) {}
+    public void getRouteListResponse(ArrayList<Route> routes) {}
+    public void addCoordinateResponse(boolean success) {}
+    public void setCurrentBusPositionResponse(boolean success) {}
+    public void getCurrentBusPositionResponse(BusPosition position) {}
+    public void addStopResponse(boolean success) {}
+    public void deleteStopSubscriptionResponse(boolean success) {}
+    public void addStopSubscriptionResponse(boolean success) {}
+    public void getStopSubscriptionsResponse(ArrayList<StopSubscription> subs) {}
 }
 
 
@@ -239,5 +257,3 @@ class RegisterAsyncTask extends AsyncTask<String, String, String> {
         Log.v("GCMfoo", "ASYNC: " + msg);
     }
 }
-
-

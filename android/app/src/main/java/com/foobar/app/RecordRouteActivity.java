@@ -30,7 +30,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
     double currentLat;
     double currentLong;
     long id = 0;
-    private ServerCommunicator comm = new ServerCommunicator(this);
+    private ServerCommunicator comm;
 
     public void createRouteResponse(long route_id){
         id = route_id;
@@ -58,6 +58,7 @@ public class RecordRouteActivity extends Activity implements LocationListener, O
 
         //hide icon
         getActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+        this.comm = new ServerCommunicator(this);
 
         this.routeNameInput = (EditText) findViewById(R.id.routeNameInput);
         this.stopNameInput = (EditText) findViewById(R.id.stopNameInput);
