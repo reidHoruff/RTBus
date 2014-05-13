@@ -1,10 +1,17 @@
 package com.foobar.app;
 
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -44,11 +51,12 @@ public class Route {
         this.polyline = new PolylineOptions();
         this.marker = new MarkerOptions();
         this.marker.position(new LatLng(100.0, 100.0));
+        this.marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         this.latLngBoundsBuilder = new LatLngBounds.Builder();
     }
 
     public Route(String name, long id) {
-        this();
+        //this();
         this.name = name;
         this.id = id;
     }
@@ -106,21 +114,63 @@ public class Route {
         this.stops.add(stop);
     }
 
-    public void setBusPosition(BusPosition pos) {
+    public void setBusPosition(BusPosition pos, GoogleMap map) {
         this.position = pos;
 
         if (pos != null) {
             Log.v("REST", "updating marker");
-            this.markerUpdate.setPosition(pos.toLatLng());
+            //this.markerUpdate.setPosition(pos.toLatLng());
+            if (pos.diff == 1) {
+                this.markerUpdate.setTitle("Last seen " + pos.diff + " second ago");
+            } else if (pos.diff < 60) {
+                this.markerUpdate.setTitle("Last seen " + pos.diff + " seconds ago");
+            } else {
+                long mins = pos.diff/60;
+                if (mins == 1) {
+                    this.markerUpdate.setTitle("Last seen " + mins + " minute ago");
+                } else {
+                    this.markerUpdate.setTitle("Last seen " + mins + " minutes ago");
+                }
+            }
+            this.transSetBusPosition(pos, map);
         }
 
-        if (this.position == null || this.position.diff >= 30) {
+        if (this.position == null || this.position.diff >= 120) {
           this.isActive = false;
           this.polylineUpdate.setColor(Color.GRAY);
         } else {
             this.isActive = true;
             this.polylineUpdate.setColor(Color.argb(0xFF, 0x1E, 0x90, 0xFF));
         }
+    }
+
+    private void transSetBusPosition(BusPosition pos, GoogleMap map) {
+        final LatLng target = pos.toLatLng();
+        final long duration = 2000;
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = map.getProjection();
+
+        final LatLng startLatLng = this.markerUpdate.getPosition();
+        final Marker marker = this.markerUpdate;
+
+        final Interpolator interpolator = new LinearInterpolator();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed / duration);
+                double lng = t * target.longitude + (1 - t) * startLatLng.longitude;
+                double lat = t * target.latitude + (1 - t) * startLatLng.latitude;
+                marker.setPosition(new LatLng(lat, lng));
+                if (t < 1.0) {
+                    // Post again 16ms later == 60 frames per second
+                    handler.postDelayed(this, 16);
+                } else {
+                    // animation ended
+                }
+            }
+        });
     }
 
     protected PolylineOptions toPolyline() {

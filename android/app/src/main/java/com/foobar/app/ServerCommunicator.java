@@ -123,7 +123,7 @@ public class ServerCommunicator {
         builder.scheme("http").authority(ADDRESS).appendPath("get_cur_pos")
                 .appendQueryParameter("id", Integer.toString(id))
                 //only random if String == "true"
-                .appendQueryParameter("r", "true");
+                .appendQueryParameter("r", "false");
         new GetCurrentBusPositionRequestTask(this.client).execute(builder.build().toString());
     }
 

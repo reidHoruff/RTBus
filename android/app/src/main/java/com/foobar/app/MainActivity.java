@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements OnServerTaskComplete {
                 "Track a Bus",
                 "Record a Route",
                 "Tracking Mode",
-                "Settings"
+                "Manage Subscriptions"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,

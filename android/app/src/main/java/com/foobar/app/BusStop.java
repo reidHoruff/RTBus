@@ -35,7 +35,7 @@ public class BusStop {
     }
 
     public MarkerOptions toMarker() {
-        return new MarkerOptions().position(this.coordinate.toLatLng());
+        return new MarkerOptions().position(this.coordinate.toLatLng()).title(this.name).alpha(0.7f);
     }
 
     public String toString() {

@@ -45,7 +45,7 @@ public class MapActivity extends Activity implements OnServerTaskComplete {
 
     public void getCurrentBusPositionResponse(BusPosition busPosition) {
         if (this.route != null) {
-            this.route.setBusPosition(busPosition);
+            this.route.setBusPosition(busPosition, this.map);
             Log.v("REST", "current pos:");
 
             if (busPosition != null) {
